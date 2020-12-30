@@ -8,24 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		11A9D6472593F03F001C990F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A9D6462593F03F001C990F /* AppDelegate.swift */; };
-		11A9D6492593F03F001C990F /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6482593F03F001C990F /* GameScene.sks */; };
-		11A9D64B2593F03F001C990F /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D64A2593F03F001C990F /* Actions.sks */; };
 		11A9D64D2593F03F001C990F /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A9D64C2593F03F001C990F /* GameScene.swift */; };
 		11A9D64F2593F03F001C990F /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A9D64E2593F03F001C990F /* GameViewController.swift */; };
 		11A9D6522593F03F001C990F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6502593F03F001C990F /* Main.storyboard */; };
 		11A9D6542593F040001C990F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6532593F040001C990F /* Assets.xcassets */; };
+		11A9D65E25941587001C990F /* shoot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D65D25941587001C990F /* shoot.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		11A9D6432593F03F001C990F /* space_invaders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = space_invaders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11A9D6462593F03F001C990F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		11A9D6482593F03F001C990F /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		11A9D64A2593F03F001C990F /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		11A9D64C2593F03F001C990F /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		11A9D64E2593F03F001C990F /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		11A9D6512593F03F001C990F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		11A9D6532593F040001C990F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11A9D6552593F040001C990F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		11A9D65D25941587001C990F /* shoot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shoot.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +56,8 @@
 		11A9D6452593F03F001C990F /* space_invaders */ = {
 			isa = PBXGroup;
 			children = (
+				11A9D65D25941587001C990F /* shoot.wav */,
 				11A9D6462593F03F001C990F /* AppDelegate.swift */,
-				11A9D6482593F03F001C990F /* GameScene.sks */,
-				11A9D64A2593F03F001C990F /* Actions.sks */,
 				11A9D64C2593F03F001C990F /* GameScene.swift */,
 				11A9D64E2593F03F001C990F /* GameViewController.swift */,
 				11A9D6502593F03F001C990F /* Main.storyboard */,
@@ -128,9 +125,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				11A9D6522593F03F001C990F /* Main.storyboard in Resources */,
-				11A9D6492593F03F001C990F /* GameScene.sks in Resources */,
+				11A9D65E25941587001C990F /* shoot.wav in Resources */,
 				11A9D6542593F040001C990F /* Assets.xcassets in Resources */,
-				11A9D64B2593F03F001C990F /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
