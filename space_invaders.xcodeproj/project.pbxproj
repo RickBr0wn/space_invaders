@@ -13,17 +13,19 @@
 		11A9D6522593F03F001C990F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6502593F03F001C990F /* Main.storyboard */; };
 		11A9D6542593F040001C990F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6532593F040001C990F /* Assets.xcassets */; };
 		11A9D65E25941587001C990F /* shoot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D65D25941587001C990F /* shoot.wav */; };
+		11E4163325AF4F07005FD43C /* explosion.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11E4163225AF4F07005FD43C /* explosion.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		11A9D6432593F03F001C990F /* space_invaders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = space_invaders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11A9D6462593F03F001C990F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		11A9D64C2593F03F001C990F /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		11A9D64C2593F03F001C990F /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		11A9D64E2593F03F001C990F /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		11A9D6512593F03F001C990F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		11A9D6532593F040001C990F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11A9D6552593F040001C990F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11A9D65D25941587001C990F /* shoot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shoot.wav; sourceTree = "<group>"; };
+		11E4163225AF4F07005FD43C /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				11A9D6462593F03F001C990F /* AppDelegate.swift */,
 				11A9D64C2593F03F001C990F /* GameScene.swift */,
 				11A9D64E2593F03F001C990F /* GameViewController.swift */,
+				11E4163225AF4F07005FD43C /* explosion.wav */,
 				11A9D6502593F03F001C990F /* Main.storyboard */,
 				11A9D6532593F040001C990F /* Assets.xcassets */,
 				11A9D6552593F040001C990F /* Info.plist */,
@@ -126,6 +129,7 @@
 			files = (
 				11A9D6522593F03F001C990F /* Main.storyboard in Resources */,
 				11A9D65E25941587001C990F /* shoot.wav in Resources */,
+				11E4163325AF4F07005FD43C /* explosion.wav in Resources */,
 				11A9D6542593F040001C990F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
