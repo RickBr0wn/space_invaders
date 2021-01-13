@@ -14,6 +14,7 @@
 		11A9D6542593F040001C990F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D6532593F040001C990F /* Assets.xcassets */; };
 		11A9D65E25941587001C990F /* shoot.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11A9D65D25941587001C990F /* shoot.wav */; };
 		11E4163325AF4F07005FD43C /* explosion.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11E4163225AF4F07005FD43C /* explosion.wav */; };
+		11E4163625AF51FB005FD43C /* theboldfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 11E4163525AF51E4005FD43C /* theboldfont.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		11A9D6552593F040001C990F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11A9D65D25941587001C990F /* shoot.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shoot.wav; sourceTree = "<group>"; };
 		11E4163225AF4F07005FD43C /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
+		11E4163525AF51E4005FD43C /* theboldfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = theboldfont.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				11A9D64C2593F03F001C990F /* GameScene.swift */,
 				11A9D64E2593F03F001C990F /* GameViewController.swift */,
 				11E4163225AF4F07005FD43C /* explosion.wav */,
+				11E4163525AF51E4005FD43C /* theboldfont.ttf */,
 				11A9D6502593F03F001C990F /* Main.storyboard */,
 				11A9D6532593F040001C990F /* Assets.xcassets */,
 				11A9D6552593F040001C990F /* Info.plist */,
@@ -127,6 +130,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11E4163625AF51FB005FD43C /* theboldfont.ttf in Resources */,
 				11A9D6522593F03F001C990F /* Main.storyboard in Resources */,
 				11A9D65E25941587001C990F /* shoot.wav in Resources */,
 				11E4163325AF4F07005FD43C /* explosion.wav in Resources */,

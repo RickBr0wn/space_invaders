@@ -9,6 +9,16 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+  /// Create the lives amount and set it initially to 3
+  var livesNumber: Int = 0
+  /// Create a SKLabelNode to carry the lives, using the custom font
+  let livesLabel = SKLabelNode(fontNamed: "theboldfont")
+  /// Create the game score and set it initially to 0
+  var gameScore: Int = 0
+  /// Create the level number and set it initially to 0
+  var levelNumber: Int = 0
+  /// Create a SKLabelNode to carry the score, using the custom font
+  let scoreLabel = SKLabelNode(fontNamed: "theboldfont")
   /// Define a scaleAmount
   let scaleAmount: CGFloat = 1.2
   /// The players ship
@@ -106,8 +116,81 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Add the player ship to the scene
     addChild(player)
     
+    // MARK: Labels
+    /// Set the score labels text
+    scoreLabel.text = "Score: 0"
+    /// Set the score labels font size
+    scoreLabel.fontSize = 70
+    /// Set the score labels color
+    scoreLabel.fontColor = SKColor.white
+    /// Align the score label to the left
+    scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+    /// Set the score labels position
+    scoreLabel.position = CGPoint(x: self.size.width * 0.15, y: self.size.height * 0.9)
+    /// Set the score labels z position
+    scoreLabel.zPosition = 100
+    /// Add the score label to the scene
+    self.addChild(scoreLabel)
+    
+    /// Set the lives label text
+    livesLabel.text = "Lives: \(livesNumber)"
+    /// Set the lives label font size
+    livesLabel.fontSize = 70
+    /// Set the lives label color
+    livesLabel.fontColor = SKColor.white
+    /// Align the lives label to the right
+    livesLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+    /// Set the lives label position
+    livesLabel.position = CGPoint(x: self.size.width * 0.85, y: self.size.height * 0.9)
+    /// Set the lives label z position
+    livesLabel.zPosition = 100
+    /// Add the lives label to the scene
+    self.addChild(livesLabel)
+    
     /// Start the new level
     startNewLevel()
+  }
+  
+  // MARK: loseOneLife
+  func loseOneLife() {
+    /// Decrement the lives number
+    livesNumber -= 1
+    /// Update the label text
+    livesLabel.text = "Lives: \(livesNumber)"
+    
+    /// Introduce a visual animation to display when a life was lost
+    /// Create a scale up action
+    let scaleUp = SKAction.scale(to: 1.5, duration: 0.2)
+    /// Create a scale down action
+    let scaleDown = SKAction.scale(to: 1, duration: 0.2)
+    /// Create a sequence of actions
+    let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+    /// Run the sequence
+    livesLabel.run(scaleSequence)
+  }
+  
+  
+  // MARK: addScore
+  func addScore() {
+    /// Increment the game score
+    gameScore += 1
+    /// Update the label text
+    scoreLabel.text = "Score: \(gameScore)"
+    
+    /// Check to see if a new level should be started
+    if gameScore == 10 || gameScore == 25 || gameScore == 50 || gameScore == 75 {
+      startNewLevel()
+    }
+    
+    /// Introduce a visual animation to display when a point is scored
+    /// Create a scale up action
+    let scaleUp = SKAction.scale(to: 1.5, duration: 0.2)
+    /// Create a scale down action
+    let scaleDown = SKAction.scale(to: 1, duration: 0.2)
+    /// Create a sequence of actions
+    let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+    /// Run the sequence
+    scoreLabel.run(scaleSequence)
   }
   
   // MARK: didBegin(_ contact: )
@@ -150,6 +233,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// If the bullet has hit the enemy, and confirm that the enemy hit, is actually on the screen
     if body1.categoryBitMask == PhysicsCategories.Bullet && body2.categoryBitMask == PhysicsCategories.Enemy && body2.node?.position.y ?? self.size.height + 1 < self.size.height {
+      /// Increment the score
+      addScore()
       /// Confirm there is a player, then spawn an explosion in the players position
       if body1.node != nil {
         spawnExplosion(spawnPosition: body1.node!.position)
@@ -243,9 +328,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Create the SKActions to move from one point to another, and delete the player ship when it has finished moving
     let moveEnemy = SKAction.move(to: endPoint, duration: 1.5)
+    /// Create a SKAction to remove an enemy from the scene
     let deleteEnemy = SKAction.removeFromParent()
+    /// Create an action to handle the removal of the life, after the deleteEnemy action is run in the sequence
+    let loseALife = SKAction.run(loseOneLife)
     /// Create a sequence
-    let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy])
+    let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy, loseALife])
     /// Run the sequence
     enemy.run(enemySequence)
     /// Rotate the enemy in the direction that it is travelling
@@ -257,11 +345,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
   // MARK: startnewLevel
   func startNewLevel() {
+    /// Increment the level number
+    levelNumber += 1
+    
+    /// If the scene already has the key "spawningEnemies" then it is running
+    /// This if block ensures there is no action already running before the next code block fires
+    if self.action(forKey: "spawningEnemies") != nil {
+      self.removeAction(forKey: "spawningEnemies")
+    }
+    
+    /// Set up level duration
+    var levelDuration = TimeInterval()
+    
+    /// Swith the level duration according to level number
+    switch levelNumber {
+    case 1:
+      levelDuration = 1.2
+    case 2:
+      levelDuration = 1
+    case 3:
+      levelDuration = 0.8
+    case 4:
+      levelDuration = 0.5
+    case 5:
+      levelDuration = 0.2
+    default:
+      levelDuration = 1
+      print("Cannot find level information")
+    }
+    
+    /// Create a SKAction to spawn an an enemy
     let spawn = SKAction.run(spawnEnemy)
-    let waitToSpawn = SKAction.wait(forDuration: 1)
-    let spawnSequence = SKAction.sequence([spawn, waitToSpawn])
+    /// Create a SKAction to delay the spawning of enemies
+    let waitToSpawn = SKAction.wait(forDuration: levelDuration)
+    /// Create a sequence of SKActions
+    let spawnSequence = SKAction.sequence([waitToSpawn, spawn])
+    /// Create a SKAction to continually loop through the sequence
     let spawnForever = SKAction.repeatForever(spawnSequence)
-    self.run(spawnForever)
+    /// Run the sequence
+    self.run(spawnForever, withKey: "spawningEnemies")
   }
   
   // MARK: touchesBegan(_ touches: , with event: )
