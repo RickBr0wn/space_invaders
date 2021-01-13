@@ -8,13 +8,14 @@
 import SpriteKit
 import GameplayKit
 
+/// Create the game score globaly so it will be scoped to all pf the scenes
+var gameScore: Int = 0
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
   /// Create the lives amount and set it initially to 3
-  var livesNumber: Int = 0
+  var livesNumber: Int = 3
   /// Create a SKLabelNode to carry the lives, using the custom font
   let livesLabel = SKLabelNode(fontNamed: "theboldfont")
-  /// Create the game score and set it initially to 0
-  var gameScore: Int = 0
   /// Create the level number and set it initially to 0
   var levelNumber: Int = 0
   /// Create a SKLabelNode to carry the score, using the custom font
@@ -28,6 +29,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   let bulletSound = SKAction.playSoundFileNamed("shoot.wav", waitForCompletion: false)
   /// Create a the sound for the explosion
   let explosionSound = SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false)
+  
+  /// Game state machine
+  enum gameState {
+    case preGame
+    case inGame
+    case postGame
+  }
+  
+  var currentGameState = gameState.inGame
   
   // MARK: PhysicsCategories
   /**
@@ -81,6 +91,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
   // MARK: didMove(to view: )
   override func didMove(to view: SKView) {
+    /// Reset the game score to zero
+    gameScore = .zero
     /// Set the scene to look for contacts of physic bodies. For this to work the scene must be of type SKPhysicsContactDelegate
     self.physicsWorld.contactDelegate = self
     
@@ -167,6 +179,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
     /// Run the sequence
     livesLabel.run(scaleSequence)
+    /// Check for zero lives, and run game over function
+    if livesNumber == 0 {
+      runGameOver()
+    }
   }
   
   
@@ -191,6 +207,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
     /// Run the sequence
     scoreLabel.run(scaleSequence)
+  }
+  
+  // MARK: runGameOver
+  func runGameOver() {
+    /// Change the currentGameState to 'postGame' using the game state machine
+    currentGameState = gameState.postGame
+    /// Terminate all of the running actions in the scene
+    self.removeAllActions()
+    
+    /// For every bullet on the screen (there maybe multiple) the action(s) it is running must also be stopped. To do this find all of the child nodes to the scene with the name of 'Bullet'
+    self.enumerateChildNodes(withName: "Bullet") {
+      /// Loop through the list of bullets
+      bullet, stop in
+      /// For each bullet, remove all actions
+      bullet.removeAllActions()
+    }
+    
+    /// Repeat the above process for the child node called 'Enemy'
+    self.enumerateChildNodes(withName: "Enemy") {
+      /// Loop through the list of enemies
+      enemy, stop in
+      /// For each enemy, remove all actions
+      enemy.removeAllActions()
+    }
+    
+    /// Run the changeScene function
+    let changeSceneAction = SKAction.run(changeScene)
+    /// Create a wait duration
+    let waitToChangeScene = SKAction.wait(forDuration: 1)
+    /// Create a sequence, from the previously computed actions
+    let changeSceneSequence = SKAction.sequence([waitToChangeScene, changeSceneAction])
+    /// Run the sequence on this scene
+    self.run(changeSceneSequence)
+  }
+  
+  // MARK: changeScene
+  /// This function will change the scene
+  func changeScene() {
+    /// Create an instance of the gameOverScene, and set the size to the current game size
+    let sceneToMoveTo = GameOverScene(size: self.size)
+    /// Set the scale mode to the current game scene scale
+    sceneToMoveTo.scaleMode = self.scaleMode
+    /// Create a transition
+    let transition = SKTransition.fade(withDuration: 0.5)
+    /// Present the scene, with the computed transition
+    self.view!.presentScene(sceneToMoveTo, transition: transition)
   }
   
   // MARK: didBegin(_ contact: )
@@ -229,6 +291,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
       body1.node?.removeFromParent()
       /// Find the node associated with the enemy physics body and remove it from the scene
       body2.node?.removeFromParent()
+      /// Run the runGameOver function
+      runGameOver()
     }
     
     /// If the bullet has hit the enemy, and confirm that the enemy hit, is actually on the screen
@@ -271,8 +335,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   // MARK: fireBullet
   func fireBullet() {
     let bullet = SKSpriteNode(imageNamed: "bullet")
+    /// Add a reference 'name' to the bullet. We can use this later with self.enumerateChildNodes (see runGameOver function
+    bullet.name = "Bullet"
+    /// Set the scale amount for the bullet
     bullet.setScale(scaleAmount)
+    /// Set the position of the bullet, starting from the players current position
     bullet.position = player.position
+    /// Place the bullet on the correct z position
     bullet.zPosition = 1
     /// Add a physics body to the bullet
     bullet.physicsBody = SKPhysicsBody(rectangleOf: bullet.size)
@@ -309,9 +378,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Spawn the enemy in its start point, and animate it to the end postion
     let enemy = SKSpriteNode(imageNamed: "enemyShip")
+    /// Set the enemies scale
     enemy.setScale(scaleAmount)
+    /// Set the enemies position from the start point
     enemy.position = startPoint
+    /// Add the enemy to the correct z position
     enemy.zPosition = 2
+    /// Add a name to the enemy
+    enemy.name = "Enemy"
     /// Add a physics body to the enemy
     enemy.physicsBody = SKPhysicsBody(rectangleOf: enemy.size)
     /// After setting the physics body, gravity will be applied to the enemy, this need to be removed for this game
@@ -325,7 +399,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /// Add the enemy to the scene
     self.addChild(enemy)
-    
     /// Create the SKActions to move from one point to another, and delete the player ship when it has finished moving
     let moveEnemy = SKAction.move(to: endPoint, duration: 1.5)
     /// Create a SKAction to remove an enemy from the scene
@@ -334,8 +407,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let loseALife = SKAction.run(loseOneLife)
     /// Create a sequence
     let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy, loseALife])
-    /// Run the sequence
-    enemy.run(enemySequence)
+    
+    /// If the current game state is 'inGame', run the sequence
+    if currentGameState == gameState.inGame {
+      enemy.run(enemySequence)
+    }
+    
     /// Rotate the enemy in the direction that it is travelling
     let deltaX = endPoint.x - startPoint.x
     let deltaY = endPoint.y - startPoint.y
@@ -388,9 +465,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
   // MARK: touchesBegan(_ touches: , with event: )
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    fireBullet()
+    /// If the game state is 'inGame', fire the bullet
+    if currentGameState == gameState.inGame {
+      fireBullet()
+    }
   }
   
+  // MARK: touchesMoved(_ touches: , with event: )
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     for touch: AnyObject in touches {
       /// Calculate the position of the touch
@@ -400,8 +481,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
       /// Calculate the difference, this will be the amount that has been dragged (touch)
       let amountDragged = pointOfTouch.x - previousPointOfTouch.x
       
-      /// Adjust the players position
-      player.position.x += amountDragged
+      /// If the game state is 'inGame', adjust the players position
+      if currentGameState == gameState.inGame {
+        player.position.x += amountDragged
+      }
       
       /// Check for and prevent the ship moving out of the game area
       /// If the ship moves off the screen, bump it back the opposite direction
