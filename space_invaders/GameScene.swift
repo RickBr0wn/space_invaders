@@ -29,6 +29,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   let bulletSound = SKAction.playSoundFileNamed("shoot.wav", waitForCompletion: false)
   /// Create a the sound for the explosion
   let explosionSound = SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false)
+  /// Create a label to start the game with
+  let tapToStartLabel = SKLabelNode(fontNamed: "theboldfont")
   
   /// Game state machine
   enum gameState {
@@ -37,7 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     case postGame
   }
   
-  var currentGameState = gameState.inGame
+  var currentGameState = gameState.preGame
   
   // MARK: PhysicsCategories
   /**
@@ -110,7 +112,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Player
     /// Position the player ship on the scene
-    player.position = CGPoint(x: self.size.width / 2, y: self.size.height * 0.2)
+    player.position = CGPoint(x: self.size.width / 2, y: 0 - player.size.height)
     /// Adjust the scale of the player ship
     player.setScale(scaleAmount)
     /// Set the z index of the player ship
@@ -137,8 +139,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     scoreLabel.fontColor = SKColor.white
     /// Align the score label to the left
     scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-    /// Set the score labels position
-    scoreLabel.position = CGPoint(x: self.size.width * 0.15, y: self.size.height * 0.9)
+    /// Set the score labels position off the top of the scene
+    scoreLabel.position = CGPoint(x: self.size.width * 0.15, y: self.size.height + scoreLabel.frame.size.height)
     /// Set the score labels z position
     scoreLabel.zPosition = 100
     /// Add the score label to the scene
@@ -152,15 +154,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     livesLabel.fontColor = SKColor.white
     /// Align the lives label to the right
     livesLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
-    /// Set the lives label position
-    livesLabel.position = CGPoint(x: self.size.width * 0.85, y: self.size.height * 0.9)
+    /// Set the lives label position off the top of the scene
+    livesLabel.position = CGPoint(x: self.size.width * 0.85, y: self.size.height + livesLabel.frame.size.height)
     /// Set the lives label z position
     livesLabel.zPosition = 100
     /// Add the lives label to the scene
     self.addChild(livesLabel)
     
-    /// Start the new level
-    startNewLevel()
+    /// Define an action to control moving the labels onto the screen
+    let moveOnToTheScreenAction = SKAction.moveTo(y: self.size.height * 0.9, duration: 0.3)
+    /// Run this action on both the score and lives labels
+    scoreLabel.run(moveOnToTheScreenAction)
+    livesLabel.run(moveOnToTheScreenAction)
+    
+    /// Define and style the start label 
+    tapToStartLabel.text = "Tap to start"
+    tapToStartLabel.fontSize = 100
+    tapToStartLabel.fontColor = SKColor.white
+    tapToStartLabel.zPosition = 1
+    tapToStartLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+    tapToStartLabel.alpha = 0
+    /// Add the start label to the scene
+    self.addChild(tapToStartLabel)
+    
+    let fadeInAction = SKAction.fadeIn(withDuration: 0.3)
+    tapToStartLabel.run(fadeInAction)
   }
   
   // MARK: loseOneLife
