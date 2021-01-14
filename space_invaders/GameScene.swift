@@ -98,17 +98,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Set the scene to look for contacts of physic bodies. For this to work the scene must be of type SKPhysicsContactDelegate
     self.physicsWorld.contactDelegate = self
     
-    // MARK: Background
-    /// Create the background
-    let background = SKSpriteNode(imageNamed: "background")
-    /// Calculate thre size of the background
-    background.size = CGSize (width: frame.maxX, height: frame.maxY)
-    /// Position the background in the center of the screen
-    background.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-    /// Position the background on the lowest z index
-    background.zPosition = 0
-    /// Add the background to the scene
-    addChild(background)
+    // MARK: Backgrounds
+    /// Loop this background twice, to generate two backgrounds (one above the other) ready for scrolling
+    for index in 0...1 {
+      /// Create the background
+      let background = SKSpriteNode(imageNamed: "background")
+      /// Generate a name for the backgrounds, allowing us to make a list of both
+      background.name = "Background"
+      /// Calculate the size of the background
+      background.size = CGSize (width: frame.maxX, height: frame.maxY)
+      /**
+          Anchor Point Positions:
+           0, 1             0.5, 1            1, 1
+           0, 0.5          0.5, 0.5         1, 0.5
+           0, 0             0.5, 0            1, 0
+       */
+      /// Change the anchor point of the background, to the bottom center (0.5, 0)
+      background.anchorPoint = CGPoint(x: 0.5, y: 0)
+      /// Position the backgrounds in the center of the screen, using the loop index as a multiplier (0 & 1)
+      background.position = CGPoint(x: self.size.width / 2, y: self.size.height * CGFloat(index))
+      /// Position the background on the lowest z index
+      background.zPosition = 0
+      /// Add the background to the scene
+      addChild(background)
+    }
     
     // MARK: Player
     /// Position the player ship on the scene
@@ -167,7 +180,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     scoreLabel.run(moveOnToTheScreenAction)
     livesLabel.run(moveOnToTheScreenAction)
     
-    /// Define and style the start label 
+    /// Define and style the start label
     tapToStartLabel.text = "Tap to start"
     tapToStartLabel.fontSize = 100
     tapToStartLabel.fontColor = SKColor.white
@@ -203,6 +216,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
   }
   
+  // MARK: startGame
+  func startGame() {
+    /// Start the game by moving the current game state to inGame
+    currentGameState = gameState.inGame
+    /// Define actions to transition from preGame to inGame
+    let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+    let deleteAction = SKAction.removeFromParent()
+    /// Create a sequence from the actions
+    let deleteSequence = SKAction.sequence([fadeOutAction, deleteAction])
+    /// Run the sequence on the tap to start label
+    tapToStartLabel.run(deleteSequence)
+    
+    /// Create actions/sequence to move the plyer ship into view
+    let moveShipToCorrectPositionAction = SKAction.moveTo(y: self.size.height * 0.2, duration: 0.5)
+    let startNewLevelAction = SKAction.run(startNewLevel)
+    /// Create a sequence from the actions
+    let startGameSequence = SKAction.sequence([moveShipToCorrectPositionAction, startNewLevelAction])
+    /// Run the sequence on the player
+    player.run(startGameSequence)
+    
+  }
+  
+  ///Define a variable to hold the last updated time
+  var lastUpdateTime: TimeInterval = 0
+  /// Define a variable to hold the delta time
+  var deltaFrameTime: TimeInterval = 0
+  /// Define a constant variable for the amount of pixels to move per second
+  let amountToMovePerSecond: CGFloat = 600.0
+  
+  override func update(_ currentTime: TimeInterval) {
+    /// Delta time - the measurment of time between two time measurements
+    if lastUpdateTime == 0 {
+      /// If this is the first frame we cannot compute the delta time
+      lastUpdateTime = currentTime
+    } else {
+      /// At any other frame than the first frame calculate the delta time
+      deltaFrameTime = currentTime - lastUpdateTime
+      /// Then make the last updated time the current time
+      lastUpdateTime = currentTime
+    }
+    /// Move the background(s)
+    let amountToMoveBackground = amountToMovePerSecond * CGFloat(deltaFrameTime)
+    /// Create a list of the "Background"s
+    self.enumerateChildNodes(withName: "Background") {
+      /// Loop through the backgrounds
+      background, stop in
+      /// If the current game state is 'inGame' move the background
+      if self.currentGameState == gameState.inGame {
+        background.position.y -= amountToMoveBackground
+      }
+      /// Check for a background leaving the bottom of the screen
+      if background.position.y < -self.size.height {
+        /// Push the background up twice so the anchor point will now be top of the screen, ready to scroll back down
+        background.position.y += self.size.height * 2
+      }
+    }
+  }
   
   // MARK: addScore
   func addScore() {
@@ -353,7 +423,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   // MARK: fireBullet
   func fireBullet() {
     let bullet = SKSpriteNode(imageNamed: "bullet")
-    /// Add a reference 'name' to the bullet. We can use this later with self.enumerateChildNodes (see runGameOver function
+    /// Add a reference 'name' to the bullet. We can use this later with self.enumerateChildNodes (see runGameOver function)
     bullet.name = "Bullet"
     /// Set the scale amount for the bullet
     bullet.setScale(scaleAmount)
@@ -483,8 +553,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
   // MARK: touchesBegan(_ touches: , with event: )
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    /// If the game state is 'inGame', fire the bullet
-    if currentGameState == gameState.inGame {
+    
+    if currentGameState == gameState.preGame {
+      /// If the game state is 'preGame', start the game
+      startGame()
+    } else if currentGameState == gameState.inGame {
+      /// If the game state is 'inGame', fire the bullet
       fireBullet()
     }
   }
